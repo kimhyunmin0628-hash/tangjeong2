@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  RESIDENT
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ImprovementCategory {
+  LANDSCAPE    // 조경특화
+  SCULPTURE    // 조형물특화
+  COMMUNITY    // 주민공동시설 특화
+  FACADE       // 입면특화
+  QUALITY      // 품질관리
+  SAFETY       // 안전관리
+  EXECUTION    // 원가관리 - 실행현황
+  REVENUE      // 원가관리 - 매출현황
+  RECEIVABLE   // 원가관리 - 채권현황
+  OTHER        // 기타
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  dong         String // 동
+  ho           String // 호
+  phone        String     @unique
+  passwordHash String
+  role         Role       @default(RESIDENT)
+  status       UserStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+
+  notices      Notice[]
+  photos       Photo[]
+  improvements ImprovementItem[]
+  progressUploads ProgressUpload[]
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model Photo {
+  id           String   @id @default(cuid())
+  month        String // "YYYY-MM"
+  url          String
+  caption      String?
+  createdAt    DateTime @default(now())
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+}
+
+model ProgressUpload {
+  id           String          @id @default(cuid())
+  fileName     String
+  createdAt    DateTime        @default(now())
+  uploadedBy   User            @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  points       ProgressPoint[]
+}
+
+model ProgressPoint {
+  id       String         @id @default(cuid())
+  label    String // 날짜/차수 라벨 (예: 2024-05, 1주차 등)
+  planned  Float // 계획 공정율 (%)
+  actual   Float? // 실적 공정율 (%)
+  upload   ProgressUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  uploadId String
+  order    Int
+}
+
+model ImprovementItem {
+  id           String              @id @default(cuid())
+  category     ImprovementCategory
+  title        String
+  description  String?
+  tableData    Json? // 원가관리 카드 자동 파싱 시 저장되는 표 데이터 (string[][])
+  fileUrl      String
+  fileType     String // "pdf" | "ppt"
+  createdAt    DateTime            @default(now())
+  uploadedBy   User                @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  images       ImprovementImage[]
+}
+
+model ImprovementImage {
+  id       String          @id @default(cuid())
+  url      String
+  caption  String?
+  order    Int
+  item     ImprovementItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId   String
+}
