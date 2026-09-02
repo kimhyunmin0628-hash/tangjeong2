@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import ProgressChart from "./progress-chart";
-import ProgressUploadForm from "./progress-upload-form";
+import ProgressInputForm from "./progress-input-form";
 import MilestoneTimeline from "./milestone-timeline";
 
 export default async function ProgressPage() {
@@ -31,8 +31,7 @@ export default async function ProgressPage() {
         </div>
         {latestUpload && (
           <p className="text-xs text-muted">
-            최근 업데이트: {latestUpload.fileName} ·{" "}
-            {latestUpload.createdAt.toLocaleDateString("ko-KR")}
+            최근 업데이트: {latestUpload.updatedAt.toLocaleDateString("ko-KR")}
           </p>
         )}
       </div>
@@ -71,7 +70,7 @@ export default async function ProgressPage() {
 
       {isAdmin && (
         <div className="mb-6">
-          <ProgressUploadForm />
+          <ProgressInputForm />
         </div>
       )}
 
