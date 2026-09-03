@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => null);
   const label = typeof body?.label === "string" ? body.label.trim() : "";
-  const actual = Number(body?.actual);
+  const actual = Math.round(Number(body?.actual) * 10) / 10;
 
   if (!label) {
     return NextResponse.json({ error: "월/차수 라벨이 없습니다." }, { status: 400 });

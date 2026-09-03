@@ -101,12 +101,12 @@ export default async function ProgressPage() {
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <SummaryCard
               label="현재 실적 공정율"
-              value={latestPoint ? `${latestPoint.actual}%` : "-"}
+              value={latestPoint ? `${latestPoint.actual!.toFixed(1)}%` : "-"}
               accent
             />
             <SummaryCard
               label="현재 계획 공정율"
-              value={lastPlanned !== null ? `${lastPlanned}%` : "-"}
+              value={lastPlanned !== null ? `${lastPlanned.toFixed(1)}%` : "-"}
             />
             <SummaryCard
               label="차이"

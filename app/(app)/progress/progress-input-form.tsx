@@ -38,7 +38,7 @@ export default function ProgressInputForm({
     const res = await fetch("/api/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ label: nextLabel, actual: Number(actual) }),
+      body: JSON.stringify({ label: nextLabel, actual: Number(Number(actual).toFixed(1)) }),
     });
     setLoading(false);
 
@@ -77,7 +77,7 @@ export default function ProgressInputForm({
           type="number"
           min={0}
           max={100}
-          step="0.01"
+          step="0.1"
           autoFocus
           value={actual}
           onChange={(e) => setActual(e.target.value)}
