@@ -19,14 +19,14 @@ interface Item {
   images: Image[];
 }
 
-/** "OO 변경전"/"OO 변경후" 캡션이 연달아 붙은 이미지 쌍은 좌우로 나란히 배치 */
+/** "변경전"/"변경후"가 포함된 캡션이 연달아 붙은 이미지 쌍은 좌우로 나란히 배치 */
 function renderImages(images: Image[], title: string) {
   const nodes: React.ReactNode[] = [];
   let i = 0;
   while (i < images.length) {
     const cur = images[i];
     const next = images[i + 1];
-    if (cur.caption?.endsWith("변경전") && next?.caption?.endsWith("변경후")) {
+    if (cur.caption?.includes("변경전") && next?.caption?.includes("변경후")) {
       nodes.push(
         <div key={cur.id} className="grid grid-cols-2 gap-3">
           {[cur, next].map((img) => (
