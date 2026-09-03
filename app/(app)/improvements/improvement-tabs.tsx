@@ -6,6 +6,7 @@ interface Image {
   id: string;
   url: string;
   order: number;
+  caption?: string | null;
 }
 
 interface Item {
@@ -16,6 +17,48 @@ interface Item {
   fileType: string;
   createdAt: Date | string;
   images: Image[];
+}
+
+/** "OO 변경전"/"OO 변경후" 캡션이 연달아 붙은 이미지 쌍은 좌우로 나란히 배치 */
+function renderImages(images: Image[], title: string) {
+  const nodes: React.ReactNode[] = [];
+  let i = 0;
+  while (i < images.length) {
+    const cur = images[i];
+    const next = images[i + 1];
+    if (cur.caption?.endsWith("변경전") && next?.caption?.endsWith("변경후")) {
+      nodes.push(
+        <div key={cur.id} className="grid grid-cols-2 gap-3">
+          {[cur, next].map((img) => (
+            <figure key={img.id}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.url}
+                alt={title}
+                className="w-full rounded-xl border border-border object-contain"
+              />
+              <figcaption className="mt-1 text-center text-xs text-muted">
+                {img.caption}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      );
+      i += 2;
+    } else {
+      nodes.push(
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={cur.id}
+          src={cur.url}
+          alt={title}
+          className="w-full rounded-xl border border-border object-contain"
+        />
+      );
+      i += 1;
+    }
+  }
+  return nodes;
 }
 
 export default function ImprovementTabs({
@@ -64,15 +107,7 @@ export default function ImprovementTabs({
 
               {item.images.length > 0 ? (
                 <div className="mt-3 space-y-3">
-                  {item.images.map((img) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={img.id}
-                      src={img.url}
-                      alt={item.title}
-                      className="w-full rounded-xl border border-border object-contain"
-                    />
-                  ))}
+                  {renderImages(item.images, item.title)}
                 </div>
               ) : (
                 <a
