@@ -31,12 +31,14 @@ function renderImages(images: Image[], title: string) {
         <div key={cur.id} className="grid grid-cols-2 gap-3">
           {[cur, next].map((img) => (
             <figure key={img.id}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.url}
-                alt={title}
-                className="w-full rounded-xl border border-border object-contain"
-              />
+              <div className="h-80 sm:h-96">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.url}
+                  alt={title}
+                  className="h-full w-full rounded-xl border border-border object-contain"
+                />
+              </div>
               <figcaption className="mt-1 text-center text-xs text-muted">
                 {img.caption}
               </figcaption>
