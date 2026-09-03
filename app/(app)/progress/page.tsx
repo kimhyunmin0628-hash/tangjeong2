@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { formatMonthLabel } from "@/lib/constants";
 import ProgressChart from "./progress-chart";
 import ProgressInputForm from "./progress-input-form";
+import ProgressPrintButton from "./progress-print-button";
 import MilestoneTimeline from "./milestone-timeline";
 
 export default async function ProgressPage() {
@@ -85,7 +86,18 @@ export default async function ProgressPage() {
           아직 등록된 공정표가 없습니다.
         </p>
       ) : (
-        <>
+        <div id="progress-print-area">
+          <div className="mb-4 hidden print:block">
+            <h2 className="text-lg font-bold text-foreground">
+              더샵 탕정인피니티시티 2차 · 공정진행현황
+            </h2>
+            {latestPoint && (
+              <p className="text-sm text-muted">
+                {formatMonthLabel(latestPoint.label)} 기준
+              </p>
+            )}
+          </div>
+
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <SummaryCard
               label="현재 실적 공정율"
@@ -114,13 +126,16 @@ export default async function ProgressPage() {
                 실적: p.actual,
               }))}
             />
-            {latestPoint && (
-              <p className="mt-2 text-right text-xs text-muted">
-                {formatMonthLabel(latestPoint.label)} 기준
-              </p>
-            )}
+            <div className="mt-2 flex items-center justify-end gap-3">
+              {latestPoint && (
+                <p className="text-xs text-muted print:hidden">
+                  {formatMonthLabel(latestPoint.label)} 기준
+                </p>
+              )}
+              <ProgressPrintButton />
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

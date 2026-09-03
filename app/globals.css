@@ -29,3 +29,23 @@ body {
   color: var(--foreground);
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", Arial, sans-serif;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #progress-print-area,
+  #progress-print-area * {
+    visibility: visible;
+  }
+  #progress-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 24px;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
