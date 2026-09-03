@@ -30,6 +30,11 @@ body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", Arial, sans-serif;
 }
 
+@page {
+  size: landscape;
+  margin: 12mm;
+}
+
 @media print {
   body * {
     visibility: hidden;
@@ -38,12 +43,18 @@ body {
   #progress-print-area * {
     visibility: visible;
   }
+  /* recharts는 활성 툴팁을 visibility:hidden으로 숨기는데, 위 규칙이 자식 요소의
+     visibility를 다시 visible로 덮어써서 빈 툴팁 박스가 보이는 문제를 방지 */
+  #progress-print-area .recharts-tooltip-wrapper,
+  #progress-print-area .recharts-tooltip-wrapper * {
+    visibility: hidden !important;
+  }
   #progress-print-area {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
-    padding: 24px;
+    padding: 0;
   }
   .no-print {
     display: none !important;
