@@ -46,6 +46,7 @@ yarn-error.log*
 # 콘텐츠 추출용 원본 소스 파일 (이미 DB/스토리지로 반영 완료, 저장소에는 올리지 않음)
 /*.pptx
 /*.pdf
+/*.png
 /layout_img2.jpg
 /layout_img_2_1.jpg
 
