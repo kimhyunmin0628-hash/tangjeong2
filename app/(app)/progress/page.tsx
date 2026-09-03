@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { formatMonthLabel } from "@/lib/constants";
 import ProgressChart from "./progress-chart";
 import ProgressInputForm from "./progress-input-form";
 import MilestoneTimeline from "./milestone-timeline";
@@ -19,6 +20,8 @@ export default async function ProgressPage() {
   const latestPoint = [...points].reverse().find((p) => p.actual !== null);
   // "현재" 비교이므로 최신 실적과 같은 시점(월)의 계획값을 사용 (전체 최종 계획값이 아님)
   const lastPlanned = latestPoint ? latestPoint.planned : null;
+  // 실적이 아직 입력되지 않은 가장 빠른 시점 = "데이터 추가"의 다음 입력 대상
+  const nextPoint = points.find((p) => p.actual === null) ?? null;
 
   return (
     <div>
@@ -70,7 +73,10 @@ export default async function ProgressPage() {
 
       {isAdmin && (
         <div className="mb-6">
-          <ProgressInputForm />
+          <ProgressInputForm
+            nextLabel={nextPoint?.label ?? null}
+            nextPlanned={nextPoint?.planned ?? null}
+          />
         </div>
       )}
 
@@ -108,6 +114,11 @@ export default async function ProgressPage() {
                 실적: p.actual,
               }))}
             />
+            {latestPoint && (
+              <p className="mt-2 text-right text-xs text-muted">
+                {formatMonthLabel(latestPoint.label)} 기준
+              </p>
+            )}
           </div>
         </>
       )}
