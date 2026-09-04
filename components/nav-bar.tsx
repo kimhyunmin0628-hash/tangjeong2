@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LogoutButton from "./logout-button";
+import GeneratePresentationButton from "./generate-presentation-button";
 
 const NAV_ITEMS = [
   { href: "/intro", label: "아파트 소개" },
@@ -53,6 +54,7 @@ export default function NavBar({
               관리자
             </Link>
           )}
+          {isAdmin && <GeneratePresentationButton />}
         </nav>
         <div className="flex items-center gap-3">
           <span className="hidden text-sm text-white/80 sm:inline">
