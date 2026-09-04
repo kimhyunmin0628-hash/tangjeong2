@@ -55,20 +55,28 @@ async function fetchImageData(url: string): Promise<string | null> {
   }
 }
 
+const HERO_TEXT =
+  "더샵만의 차별화된 공간 설계로 일상생활에 특별함을 더하는 프리미엄 주거단지, " +
+  "더샵 탕정인피니티시티 2차의 입주예정자 여러분을 환영합니다. 본 자료에서는 입주 전 공사 " +
+  "현장의 진행 상황과 각종 안내사항을 확인하실 수 있습니다.";
+
 function addCoverSlide(pptx: PptxGenJS) {
   const slide = pptx.addSlide();
   slide.background = { color: NAVY };
   slide.addText("THE SHARP TANGJEONG INFINITY CITY 2", {
-    x: 0.8, y: 2.6, w: 11.7, h: 0.5, fontSize: 14, color: GOLD, charSpacing: 2,
+    x: 0.8, y: 1.7, w: 11.7, h: 0.5, fontSize: 14, color: GOLD, charSpacing: 2,
   });
   slide.addText("더샵 탕정인피니티시티 2차 안내자료", {
-    x: 0.8, y: 3.1, w: 11.7, h: 1.2, fontSize: 40, bold: true, color: WHITE,
+    x: 0.8, y: 2.2, w: 11.7, h: 1.1, fontSize: 40, bold: true, color: WHITE,
   });
   const today = new Date();
   slide.addText(
     `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`,
-    { x: 0.8, y: 4.3, w: 11.7, h: 0.5, fontSize: 14, color: "C7D2E3" }
+    { x: 0.8, y: 3.3, w: 11.7, h: 0.5, fontSize: 14, color: "C7D2E3" }
   );
+  slide.addText(HERO_TEXT, {
+    x: 0.8, y: 4.0, w: 11.3, h: 2.2, fontSize: 14, color: "C7D2E3", valign: "top",
+  });
 }
 
 function addSectionDivider(pptx: PptxGenJS, title: string, subtitle?: string) {
@@ -174,14 +182,6 @@ async function addDetailSlides(
 }
 
 async function buildIntro(pptx: PptxGenJS) {
-  addSectionDivider(
-    pptx,
-    "더샵 탕정인피니티시티 2차",
-    "더샵만의 차별화된 공간 설계로 일상생활에 특별함을 더하는 프리미엄 주거단지, " +
-      "더샵 탕정인피니티시티 2차의 입주예정자 여러분을 환영합니다. 본 자료에서는 입주 전 공사 " +
-      "현장의 진행 상황과 각종 안내사항을 확인하실 수 있습니다."
-  );
-
   const INFO_ROWS: [string, string][] = [
     ["공사명", "아산 탕정지구 A3블럭 공동주택 신축공사 (더샵 탕정인피니티시티 2차)"],
     ["현장 위치", "충남 아산시 탕정면 매곡리 835번지"],
@@ -201,12 +201,25 @@ async function buildIntro(pptx: PptxGenJS) {
   infoSlide.background = { color: WHITE };
   infoSlide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: SLIDE_W, h: 1.0, fill: { color: NAVY } });
   infoSlide.addText("단지 정보", { x: 0.6, y: 0, w: 12.1, h: 1.0, fontSize: 22, bold: true, color: WHITE, valign: "middle" });
+
+  const perspectiveUrls = await Promise.all(
+    ["/images/intro/perspective-1.jpg", "/images/intro/perspective-2.jpg"].map(fetchImageData)
+  );
+  const perspW = 5.9;
+  const perspH = 1.8;
+  perspectiveUrls.forEach((data, i) => {
+    const x = 0.6 + i * (perspW + 0.33);
+    if (data) {
+      infoSlide.addImage({ data, x, y: 1.15, w: perspW, h: perspH, sizing: { type: "contain", w: perspW, h: perspH } });
+    }
+  });
+
   infoSlide.addTable(
     INFO_ROWS.map(([label, value]) => [
-      { text: label, options: { bold: true, color: NAVY, fill: { color: BG }, fontSize: 11 } },
-      { text: value, options: { color: TEXT, fontSize: 11 } },
+      { text: label, options: { bold: true, color: NAVY, fill: { color: BG }, fontSize: 10 } },
+      { text: value, options: { color: TEXT, fontSize: 10 } },
     ]),
-    { x: 0.6, y: 1.25, w: 12.13, colW: [2.6, 9.53], border: { type: "solid", color: BORDER, pt: 0.5 }, autoPage: false }
+    { x: 0.6, y: 3.25, w: 12.13, colW: [2.6, 9.53], border: { type: "solid", color: BORDER, pt: 0.5 }, autoPage: false }
   );
 
   const unitSlide = pptx.addSlide();
@@ -218,20 +231,27 @@ async function buildIntro(pptx: PptxGenJS) {
     const col = i % 3;
     const row = Math.floor(i / 3);
     const x = 0.6 + col * 4.05;
-    const y = 1.3 + row * 1.0;
-    unitSlide.addShape(pptx.ShapeType.roundRect, { x, y, w: 3.8, h: 0.8, fill: { color: BG }, line: { color: BORDER }, rectRadius: 0.08 });
-    unitSlide.addText(name, { x, y, w: 3.8, h: 0.8, fontSize: 16, bold: true, color: NAVY, align: "center", valign: "middle" });
+    const y = 1.25 + row * 0.9;
+    unitSlide.addShape(pptx.ShapeType.roundRect, { x, y, w: 3.8, h: 0.7, fill: { color: BG }, line: { color: BORDER }, rectRadius: 0.08 });
+    unitSlide.addText(name, { x, y, w: 3.8, h: 0.7, fontSize: 16, bold: true, color: NAVY, align: "center", valign: "middle" });
   });
+  const unitPlanData = await fetchImageData("/images/intro/unit-type-plan.png");
+  if (unitPlanData) {
+    const y = 3.15;
+    const h = SLIDE_H - y - 0.3;
+    unitSlide.addImage({ data: unitPlanData, x: 0.6, y, w: 12.13, h, sizing: { type: "contain", w: 12.13, h } });
+  }
 
-  await addDetailSlides(pptx, {
-    title: "투시도 및 평면도",
-    images: [
-      { url: "/images/intro/perspective-1.jpg", caption: "현장 투시도 1" },
-      { url: "/images/intro/perspective-2.jpg", caption: "현장 투시도 2" },
-      { url: "/images/intro/unit-type-plan.png", caption: "평형별 타입 평면도" },
-      { url: "/images/intro/site-org-chart.png", caption: "현장조직도" },
-    ],
-  });
+  const orgSlide = pptx.addSlide();
+  orgSlide.background = { color: WHITE };
+  orgSlide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: SLIDE_W, h: 1.0, fill: { color: NAVY } });
+  orgSlide.addText("현장조직도", { x: 0.6, y: 0, w: 12.1, h: 1.0, fontSize: 22, bold: true, color: WHITE, valign: "middle" });
+  const orgChartData = await fetchImageData("/images/intro/site-org-chart.png");
+  if (orgChartData) {
+    const y = 1.2;
+    const h = SLIDE_H - y - 0.3;
+    orgSlide.addImage({ data: orgChartData, x: 0.6, y, w: 12.13, h, sizing: { type: "contain", w: 12.13, h } });
+  }
 }
 
 async function buildPhotos(pptx: PptxGenJS) {
