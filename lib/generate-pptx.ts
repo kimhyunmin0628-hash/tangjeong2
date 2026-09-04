@@ -25,6 +25,13 @@ interface ImageInput {
   caption?: string | null;
 }
 
+/** Vercel 서버리스 함수에는 public/ 폴더가 파일시스템으로 포함되지 않으므로,
+ * 로컬 파일 읽기가 실패하면 배포된 도메인에서 같은 경로를 직접 fetch한다. */
+function publicFileUrlFallback(url: string) {
+  const base = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
+  return `${base}${url}`;
+}
+
 async function fetchImageData(url: string): Promise<string | null> {
   try {
     let buffer: Buffer;
@@ -33,7 +40,13 @@ async function fetchImageData(url: string): Promise<string | null> {
       if (!res.ok) return null;
       buffer = Buffer.from(await res.arrayBuffer());
     } else {
-      buffer = fs.readFileSync(path.join(process.cwd(), "public", url));
+      try {
+        buffer = fs.readFileSync(path.join(process.cwd(), "public", url));
+      } catch {
+        const res = await fetch(publicFileUrlFallback(url));
+        if (!res.ok) return null;
+        buffer = Buffer.from(await res.arrayBuffer());
+      }
     }
     const mime = url.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg";
     return `data:${mime};base64,${buffer.toString("base64")}`;
