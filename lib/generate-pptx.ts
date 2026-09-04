@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import sharp from "sharp";
 import PptxGenJS from "pptxgenjs";
 import { prisma } from "@/lib/prisma";
 import {
@@ -36,12 +35,8 @@ async function fetchImageData(url: string): Promise<string | null> {
     } else {
       buffer = fs.readFileSync(path.join(process.cwd(), "public", url));
     }
-    const resized = await sharp(buffer)
-      .resize({ width: 1100, withoutEnlargement: true })
-      .flatten({ background: "#ffffff" })
-      .jpeg({ quality: 78 })
-      .toBuffer();
-    return `data:image/jpeg;base64,${resized.toString("base64")}`;
+    const mime = url.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg";
+    return `data:${mime};base64,${buffer.toString("base64")}`;
   } catch {
     return null;
   }

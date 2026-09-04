@@ -44,22 +44,26 @@ export default function GeneratePresentationButton() {
         body: JSON.stringify({ sections: Array.from(selected) }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.url) {
         setError(data.error ?? "생성 중 오류가 발생했습니다.");
         setLoading(false);
         return;
       }
 
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+      // Blob 저장소 URL은 크로스오리진이라 download 속성이 무시될 수 있어,
+      // 직접 받아와 로컬 blob URL로 만든 뒤 다운로드시킨다.
+      const fileRes = await fetch(data.url);
+      const blob = await fileRes.blob();
+      const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
+      a.href = objectUrl;
       a.download = "안내자료.pptx";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      URL.revokeObjectURL(objectUrl);
 
       setLoading(false);
       setOpen(false);

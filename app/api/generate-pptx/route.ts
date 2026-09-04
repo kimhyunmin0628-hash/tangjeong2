@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { requireAdmin } from "@/lib/require-admin";
 import { generatePresentation, SECTION_ORDER } from "@/lib/generate-pptx";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function POST(req: Request) {
   const session = await requireAdmin();
@@ -20,13 +21,12 @@ export async function POST(req: Request) {
 
   try {
     const buffer = await generatePresentation(sections);
-    return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "Content-Disposition":
-          "attachment; filename=\"presentation.pptx\"; filename*=UTF-8''%EC%95%88%EB%82%B4%EC%9E%90%EB%A3%8C.pptx",
-      },
+    const blob = await put(`presentations/${Date.now()}.pptx`, buffer, {
+      access: "public",
+      addRandomSuffix: true,
+      contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     });
+    return NextResponse.json({ ok: true, url: blob.url });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
