@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { generatePresentation } from "@/lib/generate-pptx";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const buffer = await generatePresentation(["INTRO"]);
