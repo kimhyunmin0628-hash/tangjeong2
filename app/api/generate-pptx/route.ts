@@ -3,7 +3,7 @@ import { put } from "@vercel/blob";
 import { requireAdmin } from "@/lib/require-admin";
 import { generatePresentation, SECTION_ORDER } from "@/lib/generate-pptx";
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const session = await requireAdmin();
